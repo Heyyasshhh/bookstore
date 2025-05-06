@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from .models import Books
 
 
@@ -55,7 +55,7 @@ def signup(req):
             return render(req,'signup.html')
             
         newuser=User.objects.create(username=uname,email=uemail,password=upass)
-        newuser.set_password()
+        newuser.set_password(upass)
         newuser.save()
         print(User.objects.all())
         
@@ -66,9 +66,40 @@ def signup(req):
         return render(req, "signup.html")
 
 
+from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.hashers import check_password
 def signin(req):
-    return render(req, "signin.html")
+    if req.method == "POST":
+        # uname = req.POST.get("uname")
+        uemail = req.POST.get("uemail")
+        upass = req.POST.get("upass")
+        print(uemail,upass)
+        # userdata=User.objects.filter(email=uemail, password=upass)
+        # userdata = authenticate(username=uname,password=upass)
+        # print(userdata)
+        # chk=User.objects.filter(username=uname,email=uemail)
+        try:
+            checkemail = User.objects.get(email=uemail)
+            print(checkemail)
+            if checkemail.check_password(upass):
+                login(req,checkemail)
+                return render(req,'dashboard.html')
+            else:
+                messages.error(req,'Invalid email or password')
+                return render(req,'signin.html')
+        except:
+            messages.error(req, "Email Id Not Exists" )
+            return render(req, 'signin.html')
+    else:
+        return render(req,"signin.html")
 
+
+def dashboard(req):
+    return render(req,"dashboard.html")
+
+def userLogout(req):
+    logout(req)
+    return redirect("/")
 
 def about(req):
     return render(req, "about.html")

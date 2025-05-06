@@ -7,5 +7,6 @@ urlpatterns = [
     path("signin/", views.signin, name="signin"),
     path("about/", views.about, name="about"),
     path("contact/", views.contact, name="contact"),
+    path("userLogout/", views.userLogout, name="userLogout")
     # path("", views.DTLdemo),
 ]
